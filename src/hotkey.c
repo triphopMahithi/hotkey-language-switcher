@@ -71,9 +71,12 @@ LRESULT CALLBACK keyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 }
 
 int main() {
+
+    switchLanguage();
+    
     MSG msg;
     remapper = createDefaultRemapper();
-
+    
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, keyboardProc, NULL, 0);
     if (!hHook) {
         // Error hHook
@@ -87,4 +90,10 @@ int main() {
 
     UnhookWindowsHookEx(hHook);
     return 0;
+
+    
+    HANDLE hMutex = CreateMutex(NULL, TRUE, "LangSwitcherSingleton");
+    if (GetLastError() == ERROR_ALREADY_EXISTS) {
+        return 0; 
+    }
 }
