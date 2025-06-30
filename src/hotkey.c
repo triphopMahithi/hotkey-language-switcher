@@ -72,6 +72,11 @@ LRESULT CALLBACK keyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 
 int main() {
 
+    HANDLE hMutex = CreateMutex(NULL, TRUE, "LangSwitcherSingleton");
+    if (GetLastError() == ERROR_ALREADY_EXISTS) {
+        return 0; 
+    }
+
     switchLanguage();
     
     MSG msg;
@@ -90,10 +95,4 @@ int main() {
 
     UnhookWindowsHookEx(hHook);
     return 0;
-
-    
-    HANDLE hMutex = CreateMutex(NULL, TRUE, "LangSwitcherSingleton");
-    if (GetLastError() == ERROR_ALREADY_EXISTS) {
-        return 0; 
-    }
 }
