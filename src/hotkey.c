@@ -9,10 +9,27 @@ typedef struct {
 } KeyCommand;
 
 void switchLanguage() {
-    keybd_event(VK_CONTROL, 0, 0, 0);          // Ctrl down
-    keybd_event(VK_SHIFT, 0, 0, 0);            // Shift down
-    keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);  // Shift up
-    keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0); // Ctrl up
+    INPUT inputs[4] = {0};
+
+    // Ctrl down
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = VK_CONTROL;
+
+    // Shift down
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = VK_SHIFT;
+
+    // Shift up
+    inputs[2].type = INPUT_KEYBOARD;
+    inputs[2].ki.wVk = VK_SHIFT;
+    inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    // Ctrl up
+    inputs[3].type = INPUT_KEYBOARD;
+    inputs[3].ki.wVk = VK_CONTROL;
+    inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(4, inputs, sizeof(INPUT));
 }
 
 KeyCommand createCapLockCommand() {
@@ -77,7 +94,13 @@ int main() {
         return 0; 
     }
 
-    switchLanguage();
+    
+    HKL hklThai = LoadKeyboardLayout("0000041E", KLF_ACTIVATE);
+    if (!hklThai) {
+        MessageBox(NULL, "Failed to load Thai keyboard layout", "Error", MB_OK);
+        return 1;
+    }
+    ActivateKeyboardLayout(hklThai, KLF_SETFORPROCESS);
     
     MSG msg;
     remapper = createDefaultRemapper();
